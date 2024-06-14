@@ -94,6 +94,10 @@ export DEBIAN_FRONTEND=noninteractive
 # 设置基本变量
 set_option
 
+
+# 解除临时文件系统的挂载
+umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
+umount -lf ${chroot_dir}/* 2> /dev/null || true
 # 创建基础镜像
 # create_chroot
 
@@ -101,10 +105,12 @@ set_option
 install_server_deb
 
 # 设置基础用户信息
-set_user
+# set_user
+
 if [[ $BUILD_DESKTOP == "desktop" ]]; then
-        install_desktop_deb
+        install_desktop
+        choose_debs
+        dpkg_install_debs_chroot 
 fi
 
-# 安装deb包
-# dpkg_install_debs_chroot 
+

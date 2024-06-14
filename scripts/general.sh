@@ -197,15 +197,16 @@ set_option()
 	chroot_dir=binary
 
 	# 设置deb包路径
-	packages=packages
+	ROOT=$PWD
+	packages=$PWD/packages
+
+	# 创建目标目录
+	cd build
+	mkdir -p "${chroot_dir}"
 }
 
 create_chroot()
 {
-	# 创建目标目录
-	cd build
-	mkdir -p "${chroot_dir}"
-
 	debootstrap --variant=buildd \
 	--components="${components}"\
 	--arch="${arch}" $DEBOOTSTRAP_OPTION \
@@ -316,10 +317,10 @@ display_alert "set default config." "" "info"
 mkdir -p ${chroot_dir}/packages
 cp $packages/common/topeet-config.deb ${chroot_dir}/packages
 chroot "${chroot_dir}" /bin/bash -c "dpkg -x /packages/topeet-config.deb ."
-rm -rf ${chroot_dir}/topeet-config.deb
+rm -rf ${chroot_dir}/packages/topeet-config.deb
 }
 
-install_desktop_deb()
+install_desktop()
 {
 	if [[ $BUILD_OPT == "ubuntu20" ]]; then
 		echo -e "\033[36m install xfce \033[0m"
@@ -341,7 +342,51 @@ install_desktop_deb()
 display_alert "set desktop default config." "" "info"
 cp $packages/common/topeet-desktop-config.deb ${chroot_dir}/packages
 chroot "${chroot_dir}" /bin/bash -c "dpkg -x /packages/topeet-desktop-config.deb ."
-rm -rf ${chroot_dir}/topeet-desktop-config.deb
+rm -rf ${chroot_dir}/packages/topeet-desktop-config.deb
+}
+
+choose_debs()
+{
+	cp -rf $packages/common/libjpeg62-turbo_1.5.1-2_arm64.deb ${chroot_dir}/packages 
+	chroot "${chroot_dir}" /bin/bash -c "dpkg -i /packages/libjpeg62-turbo_1.5.1-2_arm64.deb"
+	if [[ $BOARD == "rk3562" ]]; then
+		cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/libdrm-cursor ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/libv4l ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/glmark2 ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/ffmpeg ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/xserver ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/mpv ${chroot_dir}/packages 
+	elif [[ $BOARD == "rk3568" ]]; then
+		cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/libdrm-cursor ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/libv4l ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/glmark2 ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/ffmpeg ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/xserver ${chroot_dir}/packages 
+		cp -rf $packages/$BOARD/$BUILD_OPT/mpv ${chroot_dir}/packages 
+	elif [[ $BOARD == "rk3588" ]]; then
+		if [[ $BUILD_OPT == "ubuntu22_gnome" ]] ; then		
+			cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 	
+			cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/libv4l ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/glmark2 ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/ffmpeg ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/mesa ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/mpv ${chroot_dir}/packages 
+			rm -rf ${chroot_dir}/packages/libmali 
+		else
+			cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/libv4l ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/glmark2 ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/ffmpeg ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/xserver ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/$BUILD_OPT/mpv ${chroot_dir}/packages 
+		fi
+	fi
 }
 
 dpkg_install_debs_chroot()
