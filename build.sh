@@ -76,7 +76,7 @@ if [[ -z $BUILD_DESKTOP ]]; then
         unset options
 fi
 
-if [[ -z $DESKTOP_OPTION ]]; then
+if [[ $BUILD_DESKTOP == "desktop" ]] && [[ -z $DESKTOP_OPTION ]]; then
 
         options+=("xfce" "xfce")
         options+=("gnome" "gnome")
@@ -88,22 +88,23 @@ if [[ -z $DESKTOP_OPTION ]]; then
         unset options
 fi
 
-create_chroot
+# 将系统设置为非交互模式，否则使用脚本构建文件系统的过程中遇到图形界面交互选择时会出错
+export DEBIAN_FRONTEND=noninteractive
 
-#添加topeet用户并将root和topeet用户的密码都修改为topeet  
-cat << EOF | chroot ${chroot_dir} /bin/bash
-echo -e "\033[36m ......................add topeet and passwd root........................... \033[0m"       
+# 设置基本变量
+set_option
 
-# 添加topeet用户
-adduser topeet --gecos "First Last,RoomNumber,WorkPhone,HomePhone" --disabled-password
+# 创建基础镜像
+# create_chroot
 
-# 设置topeet用户的密码为topeet
-echo "topeet:topeet" |  chpasswd
+# 安装基本软件
+install_server_deb
 
-# 授予topeet用户管理员权限
-echo "topeet ALL=(ALL:ALL) ALL" >> /etc/sudoers
-sed -i -e '/\%sudo/ c \%sudo ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+# 设置基础用户信息
+set_user
+if [[ $BUILD_DESKTOP == "desktop" ]]; then
+        install_desktop_deb
+fi
 
-# 设置root用户的密码为topeet
-echo "root:topeet" | chpasswd
-EOF
+# 安装deb包
+# dpkg_install_debs_chroot 

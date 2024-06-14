@@ -161,31 +161,34 @@ create_sources_list()
 	esac
 }
 
-create_chroot()
+set_option()
 {
 	if [[ $BUILD_OPT == "ubuntu20" ]]; then
 			release="focal"
 			mirror=https://repo.huaweicloud.com/ubuntu-ports/
 			includes="ccache,locales,git,ca-certificates,devscripts,libfile-fcntllock-perl,debhelper,rsync,python3,apt-utils,perl-openssl-defaults"
+			components='main,universe,multiverse'
 	elif [[ $BUILD_OPT == "ubuntu22" ]]; then
 			release="jammy"
 			mirror=https://repo.huaweicloud.com/ubuntu-ports/
-			includes="ccache,locales,git,ca-certificates,devscripts,libfile-fcntllock-perl,debhelper,rsync,python3,apt-utils"
+			includes="ccache,locales,git,ca-certificates,devscripts,libfile-fcntllock-perl,debhelper,rsync,python3,apt-utils,perl-openssl-defaults"
+			components='main,universe,multiverse'
 	elif [[ $BUILD_OPT == "ubuntu24" ]]; then
 			release="noble"
 			mirror=https://repo.huaweicloud.com/ubuntu-ports/
-			includes="locales,git,ca-certificates,devscripts,libfile-fcntllock-perl,debhelper,rsync,python3,apt-utils"
-
+			includes="ccache,locales,git,ca-certificates,devscripts,libfile-fcntllock-perl,debhelper,rsync,python3,apt-utils,perl-openssl-defaults"
+			components='main,universe,multiverse'
 	elif [[ $BUILD_OPT == "debian11" ]]; then
 			release="bullseye"
 			mirror=https://repo.huaweicloud.com/debian/
 			includes="ccache,locales,git,ca-certificates,devscripts,libfile-fcntllock-perl,debhelper,rsync,python3,apt-utils,perl-openssl-defaults"
+			components='main,contrib'
 	elif [[ $BUILD_OPT == "debian12" ]]; then
 			release="bookworm"
 			mirror=https://repo.huaweicloud.com/debian/
 			includes="ccache,locales,git,ca-certificates,devscripts,libfile-fcntllock-perl,debhelper,rsync,python3,apt-utils,perl-openssl-defaults"
+			components='main,contrib'
 	fi
-
 
 	# 设置文件系统架构为arm64
 	arch=arm64 
@@ -193,14 +196,18 @@ create_chroot()
 	# 设置chroot的目录为binary
 	chroot_dir=binary
 
+	# 设置deb包路径
+	packages=packages
+}
+
+create_chroot()
+{
 	# 创建目标目录
+	cd build
 	mkdir -p "${chroot_dir}"
 
-	# 将系统设置为非交互模式，否则使用脚本构建文件系统的过程中遇到图形界面交互选择时会出错
-	export DEBIAN_FRONTEND=noninteractive
-
 	debootstrap --variant=buildd \
-	--components=main,contrib \
+	--components="${components}"\
 	--arch="${arch}" $DEBOOTSTRAP_OPTION \
 	--foreign \
 	--include="${includes}" "${release}" "${chroot_dir}" "${mirror}"
@@ -246,9 +253,11 @@ create_chroot()
 	# 设置 resolv.conf 和 hosts 文件
 	rm "${chroot_dir}"/etc/resolv.conf 2>/dev/null
 	echo "nameserver 114.114.114.114" > "${chroot_dir}"/etc/resolv.conf
-	echo "nameserver 8.8.8.8" > "${chroot_dir}"/etc/resolv.conf
+	echo "nameserver 8.8.8.8" >> "${chroot_dir}"/etc/resolv.conf
 	rm "${chroot_dir}"/etc/hosts 2>/dev/null
 	echo "127.0.0.1 localhost" > "${chroot_dir}"/etc/hosts
+
+	echo "topeet" > "${chroot_dir}"/etc/hostname
 
 	# 删掉锁
 	if [[ -L "${chroot_dir}"/var/lock ]]; then
@@ -273,3 +282,157 @@ create_chroot()
 	esac
 
 }
+
+install_server_deb()
+{
+	chroot "${chroot_dir}" /bin/bash -c "apt-get -y install dmidecode mtd-utils i2c-tools u-boot-tools \
+	bash-completion man-db manpages nano gnupg initramfs-tools sudo \
+	dosfstools mtools parted ntfs-3g zip atop \
+	p7zip-full htop iotop pciutils lshw lsof exfat-fuse hwinfo \
+	net-tools wireless-tools openssh-client openssh-server wpasupplicant ifupdown \
+	pigz wget curl lm-sensors bluez gdisk usb-modeswitch usb-modeswitch-data make \
+	gcc libc6-dev bison libssl-dev flex  fake-hwclock rfkill wireless-regdb toilet cmake locales \
+	openssh-server openssh-client network-manager fonts-wqy-zenhei xfonts-intl-chinese alsa-utils vim language-pack-zh-hans ntp busybox"
+}
+
+set_user()
+{
+cat << EOF | chroot ${chroot_dir} /bin/bash
+	echo -e "\033[36m ......................add topeet and passwd root........................... \033[0m"    
+	# 添加topeet用户
+	adduser topeet --gecos "First Last,RoomNumber,WorkPhone,HomePhone" --disabled-password
+
+	# 设置topeet用户的密码为topeet
+	echo "topeet:topeet" |  chpasswd
+
+	# 授予topeet用户管理员权限
+	echo "topeet ALL=(ALL:ALL) ALL" >> /etc/sudoers
+	sed -i -e '/\%sudo/ c \%sudo ALL=(ALL) NOPASSWD: ALL' /etc/sudoers
+
+	# 设置root用户的密码为topeet
+	echo "root:topeet" | chpasswd
+EOF
+display_alert "set default config." "" "info"
+mkdir -p ${chroot_dir}/packages
+cp $packages/common/topeet-config.deb ${chroot_dir}/packages
+chroot "${chroot_dir}" /bin/bash -c "dpkg -x /packages/topeet-config.deb ."
+rm -rf ${chroot_dir}/topeet-config.deb
+}
+
+install_desktop_deb()
+{
+	if [[ $BUILD_OPT == "ubuntu20" ]]; then
+		echo -e "\033[36m install xfce \033[0m"
+		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core qt5-default blueman"
+	elif [[ $BUILD_OPT == "ubuntu22" ]]; then
+		echo -e "\033[36m install xfce \033[0m"
+		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core qt5-default blueman"
+	elif [[ $BUILD_OPT == "ubuntu24" ]]; then
+		echo -e "\033[36m install xfce \033[0m"
+		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core qt5-default blueman"
+	elif [[ $BUILD_OPT == "debian11" ]]; then
+		echo -e "\033[36m install xfce \033[0m"
+		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy task-xfce-desktop blueman"
+	elif [[ $BUILD_OPT == "debian12" ]]; then
+		echo -e "\033[36m install xfce \033[0m"
+		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy task-xfce-desktop blueman"
+	fi
+
+display_alert "set desktop default config." "" "info"
+cp $packages/common/topeet-desktop-config.deb ${chroot_dir}/packages
+chroot "${chroot_dir}" /bin/bash -c "dpkg -x /packages/topeet-desktop-config.deb ."
+rm -rf ${chroot_dir}/topeet-desktop-config.deb
+}
+
+dpkg_install_debs_chroot()
+{
+	mount -t proc /proc ${chroot_dir}/proc
+	mount -t sysfs /sys ${chroot_dir}/sys
+	mount -o bind /dev ${chroot_dir}/dev
+	mount -o bind /dev/pts ${chroot_dir}/dev/pts
+
+    # 参数: $1 - 软件包目录路径
+    local deb_dir="binary/packages/"
+    local unsatisfied_dependencies=()
+    local package_names=()
+    local package_dependencies=()
+	
+    # 如果目录不存在，返回
+    [ ! -d "$deb_dir" ] && return
+
+    # 获取目录中所有 .deb 软件包
+    deb_packages=($(find "${deb_dir}/" -mindepth 1 -maxdepth 2 -type f -name "*.deb"))
+
+    # 辅助函数，检查数组中是否包含指定元素
+    find_in_array() {
+        local target="$1"
+        local element=""
+        shift
+        for element in "$@"; do
+            [[ "$element" == "$target" ]] && return 0
+        done
+        return 1
+    }
+
+    # 遍历所有软件包
+    for package in "${deb_packages[@]}"; do
+        # 获取软件包名称
+        package_names+=($(dpkg-deb -f "$package" Package))
+
+        # 解析软件包依赖
+        dep_str=$(dpkg-deb -I "${package}" | grep 'Depends' | sed 's/.*: //' | sed 's/ //g' | sed 's/([^)]*)//g')
+        IFS=',' read -ra dep_array <<< "$dep_str"
+        # 添加未满足的依赖到列表
+        if [[ ! ${#dep_array[@]} -eq 0 ]]; then
+            for element in "${dep_array[@]}"; do
+                if [[ $element == *"|"* ]]; then
+                    :
+                else
+                    if ! find_in_array "$element" "${package_dependencies[@]}"; then
+                        package_dependencies+=("${element}")
+                    fi
+                fi
+            done
+        fi
+    done
+	 
+    # 安装未满足的依赖
+    for dependency in "${package_dependencies[@]}"; do
+        if ! chroot "${chroot_dir}" /bin/bash -c "dpkg-query -W --showformat='\${Status}' ${dependency} \
+            | grep -q 'ok installed'" &>/dev/null; then
+
+            all=("${package_names[@]}" "${unsatisfied_dependencies[@]}")
+
+            if ! find_in_array "$dependency" "${all[@]}"; then
+                unsatisfied_dependencies+=("$dependency")
+            fi
+        fi
+    done
+
+    if [[ ! -z "${unsatisfied_dependencies[*]}" ]]; then
+        display_alert "Installing Dependencies" "${unsatisfied_dependencies[*]}"
+        chroot $chroot_dir /bin/bash -c "apt-get install -fy --allow-downgrades ${unsatisfied_dependencies[*]}" 
+    fi
+	local names=""
+	for package in "${deb_packages[@]}"; do
+		name="/"$(basename "${package}")
+		names+=($name)
+		[[ ! -f "${chroot_dir}${name}" ]] && cp "${package}" "${chroot_dir}${name}"
+	done
+
+	if [[ ! -z "${names[*]}" ]]; then
+		display_alert "Installing" "$(basename $deb_dir)"
+
+		# when building in bulk from remote, lets make sure we have up2date index
+		chroot "${chroot_dir}" /bin/bash -c "dpkg -i ${names[*]} "
+		chroot "${chroot_dir}" /bin/bash -c "apt-mark hold ${package_names[*]}"
+		chroot "${chroot_dir}" /bin/bash -c "rm -rf /*deb"
+	fi
+
+	chroot "${chroot_dir}" /bin/bash -c "apt-get clean"
+
+	# 解除临时文件系统的挂载
+	umount -lf ${chroot_dir}/dev/pts 2> /dev/null || true
+	umount -lf ${chroot_dir}/* 2> /dev/null || true
+}
+
