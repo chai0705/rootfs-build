@@ -4,4 +4,6 @@
 # in that subdirectory instead.
 #
 # Normal rules
-/build/binary*
+build/binary*
+build/rootfs.img
+*img

@@ -313,6 +313,15 @@ cat << EOF | chroot ${chroot_dir} /bin/bash
 	# 设置root用户的密码为topeet
 	echo "root:topeet" | chpasswd
 EOF
+
+cat << EOF | chroot ${chroot_dir} /bin/bash
+	echo -e "\033[36m ...........................beautiful terminal........................... \033[0m"      
+	echo " alias ls='ls --color' " >>/root/.bashrc
+	echo " alias ls='ls --color' " >>/home/topeet/.bashrc
+	echo " export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'" >>/root/.bashrc            
+	echo "export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'" >>/home/topeet/.bashrc
+EOF
+
 display_alert "set default config." "" "info"
 mkdir -p ${chroot_dir}/packages
 cp $packages/common/topeet-config.deb ${chroot_dir}/packages
@@ -327,10 +336,10 @@ install_desktop()
 		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core qt5-default blueman"
 	elif [[ $BUILD_OPT == "ubuntu22" ]]; then
 		echo -e "\033[36m install xfce \033[0m"
-		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core qt5-default blueman"
+		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core blueman"
 	elif [[ $BUILD_OPT == "ubuntu24" ]]; then
 		echo -e "\033[36m install xfce \033[0m"
-		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core qt5-default blueman"
+		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy xubuntu-core blueman"
 	elif [[ $BUILD_OPT == "debian11" ]]; then
 		echo -e "\033[36m install xfce \033[0m"
 		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy task-xfce-desktop blueman"
@@ -338,11 +347,6 @@ install_desktop()
 		echo -e "\033[36m install xfce \033[0m"
 		chroot "${chroot_dir}" /bin/bash -c "apt-get install -fy task-xfce-desktop blueman"
 	fi
-
-display_alert "set desktop default config." "" "info"
-cp $packages/common/topeet-desktop-config.deb ${chroot_dir}/packages
-chroot "${chroot_dir}" /bin/bash -c "dpkg -x /packages/topeet-desktop-config.deb ."
-rm -rf ${chroot_dir}/packages/topeet-desktop-config.deb
 }
 
 choose_debs()
@@ -350,6 +354,7 @@ choose_debs()
 	cp -rf $packages/common/libjpeg62-turbo_1.5.1-2_arm64.deb ${chroot_dir}/packages 
 	chroot "${chroot_dir}" /bin/bash -c "dpkg -i /packages/libjpeg62-turbo_1.5.1-2_arm64.deb"
 	if [[ $BOARD == "rk3562" ]]; then
+		chroot "${chroot_dir}" /bin/bash -c "echo 'toilet -f standard -F metal iTOP-RK3562' >>  /etc/update-motd.d/10-topeet-logo"	
 		cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 
 		cp -rf $packages/$BOARD/$BUILD_OPT/libdrm-cursor ${chroot_dir}/packages 
 		cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
@@ -359,6 +364,7 @@ choose_debs()
 		cp -rf $packages/$BOARD/$BUILD_OPT/xserver ${chroot_dir}/packages 
 		cp -rf $packages/$BOARD/$BUILD_OPT/mpv ${chroot_dir}/packages 
 	elif [[ $BOARD == "rk3568" ]]; then
+		chroot "${chroot_dir}" /bin/bash -c "echo 'toilet -f standard -F metal iTOP-RK3568' >>  /etc/update-motd.d/10-topeet-logo"	
 		cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 
 		cp -rf $packages/$BOARD/$BUILD_OPT/libdrm-cursor ${chroot_dir}/packages 
 		cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
@@ -368,15 +374,23 @@ choose_debs()
 		cp -rf $packages/$BOARD/$BUILD_OPT/xserver ${chroot_dir}/packages 
 		cp -rf $packages/$BOARD/$BUILD_OPT/mpv ${chroot_dir}/packages 
 	elif [[ $BOARD == "rk3588" ]]; then
-		if [[ $BUILD_OPT == "ubuntu22_gnome" ]] ; then		
+		chroot "${chroot_dir}" /bin/bash -c "echo 'toilet -f standard -F metal iTOP-RK3588' >>  /etc/update-motd.d/10-topeet-logo"	
+		if [[ $DESKTOP_OPTION == "gnome" ]] ; then	
 			cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 	
-			cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
-			cp -rf $packages/$BOARD/$BUILD_OPT/libv4l ${chroot_dir}/packages 
-			cp -rf $packages/$BOARD/$BUILD_OPT/glmark2 ${chroot_dir}/packages 
-			cp -rf $packages/$BOARD/$BUILD_OPT/ffmpeg ${chroot_dir}/packages 
-			cp -rf $packages/$BOARD/$BUILD_OPT/mesa ${chroot_dir}/packages 
-			cp -rf $packages/$BOARD/$BUILD_OPT/mpv ${chroot_dir}/packages 
-			rm -rf ${chroot_dir}/packages/libmali 
+			cp -rf $packages/$BOARD/ubuntu22_gnome/mpp ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_gnome/libv4l ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_gnome/glmark2 ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_gnome/ffmpeg ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_gnome/mesa ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_gnome/mpv ${chroot_dir}/packages 
+		elif [[ $DESKTOP_OPTION == "xfce" ]] && [[ $BUILD_OPT == "ubuntu22" ]] ; then
+			cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_xfce/mpp ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_xfce/libv4l ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_xfce/glmark2 ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_xfce/ffmpeg ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_xfce/xserver ${chroot_dir}/packages 
+			cp -rf $packages/$BOARD/ubuntu22_xfce/mpv ${chroot_dir}/packages 
 		else
 			cp -rf $packages/$BOARD/common/* ${chroot_dir}/packages 
 			cp -rf $packages/$BOARD/$BUILD_OPT/mpp ${chroot_dir}/packages 
@@ -481,3 +495,19 @@ dpkg_install_debs_chroot()
 	umount -lf ${chroot_dir}/* 2> /dev/null || true
 }
 
+after_config()
+{
+	if [[ $BOARD == "rk3588" ]] && [[ $DESKTOP_OPTION != "gnome" ]] ; then
+		cp -rf $packages/$BOARD/common/libmali/mali_csffw.bin ${chroot_dir}/usr/lib/firmware/
+	fi
+
+	display_alert "set default config." "" "info"
+	cp $packages/common/topeet-config.deb ${chroot_dir}/
+	chroot "${chroot_dir}" /bin/bash -c "dpkg -x /topeet-config.deb /"
+	rm -rf ${chroot_dir}/topeet-config.deb
+
+	display_alert "set desktop default config." "" "info"
+	cp $packages/common/topeet-desktop-config.deb ${chroot_dir}/
+	chroot "${chroot_dir}" /bin/bash -c "dpkg -x /topeet-desktop-config.deb /"
+	rm -rf ${chroot_dir}/topeet-desktop-config.deb
+}
